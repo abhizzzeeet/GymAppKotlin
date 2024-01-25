@@ -5,11 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+
 
 /**
  * A simple [Fragment] subclass.
@@ -17,17 +17,8 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class LoginFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,25 +26,62 @@ class LoginFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false)
+
+
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LoginFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            LoginFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Accessing the views from the layout
+        val editTextEmail = view.findViewById<EditText>(R.id.editTextEmail)
+        val editTextMobile = view.findViewById<EditText>(R.id.editTextMobile)
+        val editTextPassword = view.findViewById<EditText>(R.id.editTextPassword)
+        val loginButton = view.findViewById<Button>(R.id.btnLogin)
+
+        // Set click listener for the login button
+        loginButton.setOnClickListener {
+            val email = editTextEmail.text.toString()
+            val mobile = editTextMobile.text.toString()
+            val password = editTextPassword.text.toString()
+
+            // Validate email
+            if (!isValidEmail(email)) {
+                editTextEmail.error = "Invalid email address"
+                return@setOnClickListener
             }
+
+            // Validate mobile number
+            if (!isValidMobileNumber(mobile)) {
+                editTextMobile.error = "Invalid mobile number"
+                return@setOnClickListener
+            }
+
+            // Validate password
+            if (!isValidPassword(password)) {
+                editTextPassword.error = "Password must be at least 6 characters"
+                return@setOnClickListener
+            }
+
+            // If all fields are valid, perform login logic here
+            // For demonstration purposes, you can print the values
+            Toast.makeText(requireContext(), "Login Successfull", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun isValidEmail(email: String): Boolean {
+        // Basic email validation
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun isValidMobileNumber(mobile: String): Boolean {
+        // Basic mobile number validation (assumes 10-digit number)
+        return android.util.Patterns.PHONE.matcher(mobile).matches() && mobile.length == 10
+    }
+
+    private fun isValidPassword(password: String): Boolean {
+        // Basic password validation (at least 6 characters)
+        return password.length >= 6
     }
 }
