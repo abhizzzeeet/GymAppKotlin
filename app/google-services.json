@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "757518782860",
+    "project_id": "gymappkotlin",
+    "storage_bucket": "gymappkotlin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757518782860:android:7cb8c240a3717335df46a9",
+        "android_client_info": {
+          "package_name": "com.example.gym"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxL8k-9wv8A9z7TCVcjz6VfL3JPa8SWkw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

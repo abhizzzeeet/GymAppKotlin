@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -11,27 +12,30 @@
         android:id="@+id/editTextEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:hint="Email ID"
         android:inputType="textEmailAddress"
-        android:layout_marginBottom="16dp" />
+        android:minHeight="48dp" />
 
     <!-- Mobile Number -->
     <EditText
         android:id="@+id/editTextMobile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:hint="Mobile Number"
         android:inputType="phone"
-        android:layout_marginBottom="16dp" />
+        android:minHeight="48dp" />
 
     <!-- Password -->
     <EditText
         android:id="@+id/editTextPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
         android:hint="Password"
         android:inputType="textPassword"
-        android:layout_marginBottom="16dp" />
+        android:minHeight="48dp" />
 
     <!-- Login Button -->
     <Button

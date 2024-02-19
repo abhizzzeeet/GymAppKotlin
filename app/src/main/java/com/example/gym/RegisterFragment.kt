@@ -8,15 +8,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import com.google.firebase.auth.FirebaseAuth
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [RegisterFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class RegisterFragment : Fragment() {
-    // TODO: Rename and change types of parameters
     private lateinit var fullNameEditText: EditText
     private lateinit var mobileNoEditText: EditText
     private lateinit var emailEditText: EditText
@@ -24,15 +19,12 @@ class RegisterFragment : Fragment() {
     private lateinit var confirmPasswordEditText: EditText
     private lateinit var registerButton: Button
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_register, container, false)
 
-        // Initialize views
         fullNameEditText = view.findViewById(R.id.fullNameEditText)
         mobileNoEditText = view.findViewById(R.id.mobileNoEditText)
         emailEditText = view.findViewById(R.id.emailEditText)
@@ -46,26 +38,37 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set click listener for the register button
         registerButton.setOnClickListener {
-            // Retrieve entered fields
             val fullName = fullNameEditText.text.toString()
             val mobileNo = mobileNoEditText.text.toString()
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
             val confirmPassword = confirmPasswordEditText.text.toString()
 
-            if(password != confirmPassword)
-                Toast.makeText(requireContext(), "Password and confirm Password don't match", Toast.LENGTH_SHORT).show()
-
-            // Check if input is valid (for demonstration purposes)
             if (isValidRegistration(fullName, mobileNo, email, password, confirmPassword)) {
-                // Successful registration, show a success message
-                val message = "Registration successful!\nName: $fullName\nMobile No.: $mobileNo\nEmail: $email"
-                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Registration success
+                            val user = FirebaseAuth.getInstance().currentUser
+                            val message =
+                                "Registration successful!\nName: $fullName\nMobile No.: $mobileNo\nEmail: $email"
+                            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+                            // Navigate to LoginFragment upon successful registration
+
+                        } else {
+                            // Registration failed
+                            Toast.makeText(
+                                requireContext(),
+                                "Registration failed: ${task.exception?.message}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
             } else {
-                // Invalid registration, show an error message
-                Toast.makeText(requireContext(), "Invalid registration input", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Invalid registration input", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -77,9 +80,22 @@ class RegisterFragment : Fragment() {
         password: String,
         confirmPassword: String
     ): Boolean {
-        // Replace this with your actual registration logic
-        // For demonstration purposes, just check if all fields are non-empty
-        return fullName.isNotEmpty() && mobileNo.isNotEmpty() && email.isNotEmpty()
-                && password.isNotEmpty() && confirmPassword.isNotEmpty()
+        if (fullName.isEmpty() || mobileNo.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            Toast.makeText(requireContext(), "All fields must be filled", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (password != confirmPassword) {
+            Toast.makeText(
+                requireContext(),
+                "Password and confirm password do not match",
+                Toast.LENGTH_SHORT
+            ).show()
+            return false
+        }
+        return true
     }
+
+
 }
+
