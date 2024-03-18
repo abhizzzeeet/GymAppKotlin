@@ -61,4 +61,37 @@
         android:layout_below="@id/phoneEditText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"/>
+
+    <EditText
+        android:id="@+id/gymNameEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/addMemberButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="58dp"
+        android:layout_marginEnd="100dp"
+        android:layout_marginBottom="236dp"
+        android:ems="10"
+        android:hint="Gym Name"
+        android:inputType="text"
+        android:minHeight="48dp" />
+
+    <Button
+        android:id="@+id/loginGymButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/addMemberButton"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="162dp"
+        android:layout_marginTop="165dp"
+        android:layout_marginEnd="158dp"
+        android:layout_marginBottom="126dp"
+        android:text="Login Gym" />
+
+
 </RelativeLayout>

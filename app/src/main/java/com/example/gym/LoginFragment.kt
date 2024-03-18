@@ -13,10 +13,12 @@ import androidx.navigation.fragment.findNavController
 
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginFragment : Fragment() {
 
-    private lateinit var mAuth: FirebaseAuth
+
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,7 +30,7 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mAuth = FirebaseAuth.getInstance()
+
 
         val editTextEmail = view.findViewById<EditText>(R.id.editTextEmail)
         val editTextMobile = view.findViewById<EditText>(R.id.editTextMobile)
@@ -60,30 +62,30 @@ class LoginFragment : Fragment() {
             }
 
             // Use Firebase Authentication to sign in the user
-            mAuth.signInWithEmailAndPassword(email, password)
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // User login was successful
-                        val user = mAuth.currentUser
-                        val message = "Login successful!\nEmail: $email"
-                        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
 
-                        // Add your logic to navigate to the next screen or perform other actions
-//                        val intent = Intent(requireContext(),AddGymActivity2::class.java)
-//                        startActivity(intent)
-                        val intent = Intent (activity, AddGymActivity::class.java)
+//
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+                        // Start AddGymActivity with userId as an extra
+                        val intent = Intent(requireContext(), AddGymActivity::class.java).apply {
+                            putExtra("USER_ID", userId)
+                        }
                         startActivity(intent)
-
                     } else {
                         // User login failed
-                        Toast.makeText(requireContext(), "Login failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            requireContext(),
+                            "Login failed: ${task.exception?.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
 
-                // Navigate to the second fragment using the NavController
-
-
-
+            // Navigate to the second fragment using the NavController
 
 
 

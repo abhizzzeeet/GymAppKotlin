@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterFragment : Fragment() {
     private lateinit var fullNameEditText: EditText
@@ -18,6 +19,7 @@ class RegisterFragment : Fragment() {
     private lateinit var passwordEditText: EditText
     private lateinit var confirmPasswordEditText: EditText
     private lateinit var registerButton: Button
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,6 +56,33 @@ class RegisterFragment : Fragment() {
                             val message =
                                 "Registration successful!\nName: $fullName\nMobile No.: $mobileNo\nEmail: $email"
                             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+
+                            // Create a new collection for the user
+                            user?.uid?.let { userId ->
+                                val userCollection = db.collection("users").document(userId).collection("userData")
+
+                                // You can add more data to store in the document
+                                val userData = hashMapOf(
+                                    "fullName" to fullName,
+                                    "mobileNo" to mobileNo,
+                                    "email" to email
+                                )
+
+                                userCollection.add(userData)
+                                    .addOnSuccessListener {
+                                        // Handle success
+                                        Toast.makeText(context, "User registered successfully!", Toast.LENGTH_SHORT).show()
+                                        // You may navigate to another fragment or perform other actions here
+                                    }
+                                    .addOnFailureListener { e ->
+                                        // Handle failures
+                                        Toast.makeText(
+                                            requireContext(),
+                                            "Failed to create user data: ${e.message}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                            }
 
                             // Navigate to LoginFragment upon successful registration
 
@@ -95,7 +124,5 @@ class RegisterFragment : Fragment() {
         }
         return true
     }
-
-
 }
 

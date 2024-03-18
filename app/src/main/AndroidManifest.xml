@@ -13,8 +13,35 @@
         android:theme="@style/Theme.Gym"
         tools:targetApi="31">
         <activity
+            android:name=".DemoActivity"
+            android:exported="false"
+            android:label="@string/title_activity_demo"
+            android:theme="@style/Theme.Gym" />
+        <activity
+            android:name=".OtherGymsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_other_gyms"
+            android:theme="@style/Theme.Gym" />
+        <activity
+            android:name=".OtherGymsLoginActivity"
+            android:exported="false"
+            android:label="@string/title_activity_other_gyms_login"
+            android:theme="@style/Theme.Gym" />
+        <activity
+            android:name=".OtherGymsActivity2"
+            android:exported="false"
+            android:label="@string/title_activity_other_gyms2"
+            android:theme="@style/Theme.Gym" />
+        <activity
             android:name=".ProfileActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/Theme.Gym.NoActionBar" />
+        <activity
+            android:name=".Profil"
+            android:exported="false"
+            android:label="@string/title_activity_profil"
+            android:theme="@style/Theme.Gym.NoActionBar" />
         <activity
             android:name=".AddGymActivity"
             android:exported="false" />

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.gym.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_membersOperationsFragment"
+            app:destination="@id/membersOperationsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_gallery"
+        android:name="com.example.gym.ui.gallery.GalleryFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.example.gym.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/membersOperationsFragment"
+        android:name="com.example.gym.ui.home.membersFragments.membersOperationsFragment"
+        android:label="fragment_members_operations"
+        tools:layout="@layout/fragment_members_operations" >
+        <action
+            android:id="@+id/action_membersOperationsFragment_to_addNewMemberFragment"
+            app:destination="@id/addNewMemberFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewMemberFragment"
+        android:name="com.example.gym.ui.home.membersFragments.addNewMemberFragment"
+        android:label="fragment_add_new_member"
+        tools:layout="@layout/fragment_add_new_member" />
+</navigation>
