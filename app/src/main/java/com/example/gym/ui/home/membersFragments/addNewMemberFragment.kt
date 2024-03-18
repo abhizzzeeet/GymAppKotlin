@@ -1,18 +1,23 @@
 package com.example.gym.ui.home.membersFragments
 
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Spinner
 import androidx.lifecycle.ViewModelProvider
 import com.example.gym.R
 import com.example.gym.SharedViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -38,6 +43,9 @@ class addNewMemberFragment : Fragment() {
     private lateinit var btnSubmit: Button
 
     private lateinit var sharedViewModel: SharedViewModel
+
+    private lateinit var trainerSpinner: Spinner // Declare Spinner variable
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -64,46 +72,90 @@ class addNewMemberFragment : Fragment() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
-        etMemberId = view.findViewById(R.id.etMemberId)
+//        etMemberId = view.findViewById(R.id.etMemberId)
         etMemberName = view.findViewById(R.id.etMemberName)
         etMobileNumber = view.findViewById(R.id.etMobileNumber)
         btnSubmit = view.findViewById(R.id.btnSubmit)
 
+        trainerSpinner = view.findViewById(R.id.trainerSpinner) // Initialize Spinner
+
         // Set click listener for submit button
         btnSubmit.setOnClickListener {
-            val memberId = etMemberId.text.toString().trim()
             val memberName = etMemberName.text.toString().trim()
             val mobileNumber = etMobileNumber.text.toString().trim()
 
             // Get the current user's ID
             val userId = auth.currentUser?.uid
 
-            if (memberId.isEmpty() || memberName.isEmpty() || mobileNumber.isEmpty() || userId.isNullOrEmpty()) {
-                // Handle empty fields
 
-            }
+            // Check if the members collection exists inside the gym document, if not, create it
+            val gymRef = db.collection("gyms").document(gymId)
+            gymRef.collection("members").get()
+                .addOnSuccessListener { querySnapshot ->
+                    if (querySnapshot.isEmpty) {
+                        // Members collection doesn't exist, create it and add the first member
+                        val memberData = hashMapOf(
+                            "name" to memberName,
+                            "memberId" to "1", // memberId starts with 1
+                            "mobileNumber" to mobileNumber,
+                            "userId" to userId
+                            // Add any other member-specific fields here
+                        )
 
-            // Add the member to the appropriate gym's subcollection
+                        gymRef.collection("members")
+                            .document("1") // Use memberId 1
+                            .set(memberData)
+                            .addOnSuccessListener {
+                                Log.d(TAG, "Member successfully added!")
+                                // Clear the form fields
+                                etMemberName.text.clear()
+                                etMobileNumber.text.clear()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e(TAG, "Error adding member", e)
+                            }
+                    } else {
+                        // Members collection exists, fetch the last memberId and increment it
+                        gymRef.collection("members")
+                            .orderBy("memberId", Query.Direction.DESCENDING)
+                            .limit(1)
+                            .get()
+                            .addOnSuccessListener { querySnapshot ->
+                                var newMemberId = 1 // Default value for the first member
+                                if (!querySnapshot.isEmpty) {
+                                    val lastMemberId = querySnapshot.documents[0].get("memberId") as String
+                                    newMemberId = lastMemberId.toInt() + 1
+                                }
 
-            val memberData = hashMapOf(
-                "name" to memberName,
-                "memberId" to memberId,
-                "mobileNumber" to mobileNumber,
-                "userId" to userId
-                // Add any other member-specific fields here
-            )
+                                // Add the new member with the incremented memberId
+                                val memberData = hashMapOf(
+                                    "name" to memberName,
+                                    "memberId" to newMemberId.toString(),
+                                    "mobileNumber" to mobileNumber,
+                                    "userId" to userId
+                                    // Add any other member-specific fields here
+                                )
 
-            db.collection("gyms").document(gymId).collection("members").document(memberId)
-                .set(memberData)
-                .addOnSuccessListener {
-                    Log.d(TAG, "Member successfully added!")
-                    // Clear the form fields
-                    etMemberId.text.clear()
-                    etMemberName.text.clear()
-                    etMobileNumber.text.clear()
+                                gymRef.collection("members")
+                                    .document(newMemberId.toString())
+                                    .set(memberData)
+                                    .addOnSuccessListener {
+                                        Log.d(TAG, "Member successfully added!")
+                                        // Clear the form fields
+                                        etMemberName.text.clear()
+                                        etMobileNumber.text.clear()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e(TAG, "Error adding member", e)
+                                    }
+                            }
+                            .addOnFailureListener { e ->
+                                Log.e(TAG, "Error fetching last memberId", e)
+                            }
+                    }
                 }
                 .addOnFailureListener { e ->
-                    Log.e(TAG, "Error adding member", e)
+                    Log.e(TAG, "Error checking members collection", e)
                 }
         }
 
@@ -111,8 +163,34 @@ class addNewMemberFragment : Fragment() {
         return view
     }
 
-    companion object {
-        private const val TAG = "AddMemberActivity"
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Define options for the drop-down
+        val options = arrayOf("Trainer 1", "Trainer 2", "Trainer 3")
+
+        // Create an ArrayAdapter
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        // Apply the adapter to the spinner
+        trainerSpinner.adapter = adapter
+        // Set item selected listener to capture selected option
+
+         var selectedOption: String? = null
+        // Set item selected listener to capture selected option
+        trainerSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedOption = options[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Handle case when nothing is selected, if needed
+            }
+        }
+
     }
 
 }
